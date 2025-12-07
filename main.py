@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from datetime import datetime
-
+from fastapi.responses import RedirectResponse
 from models import SessionLocal, SLATickets, Base, engine
 from watchdog import start_watchdog, scheduler
 
@@ -42,10 +42,9 @@ app = FastAPI(lifespan=lifespan)
 
 
 # ------ENDPOINTS--------
-@app.get("/")
-async def home():
-    return {"message": "SLA Watchdog API is running!"}
-
+@app.get("/", include_in_schema=False)
+async def redirect_to_docs():
+    return RedirectResponse(url="/docs")
 
 @app.post("/ticket/")
 async def create_or_update_ticket(ticket: TicketRequest):
