@@ -3,7 +3,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 import logging
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models import SessionLocal, Ticket
+from models import SessionLocal, SLATickets
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
 scheduler = BackgroundScheduler()
@@ -14,7 +14,7 @@ def check_sla():
     now = datetime.now(timezone.utc)
     db = SessionLocal()
 
-    tickets = db.query(Ticket).all()
+    tickets = db.query(SLATickets).all()
 
     for t in tickets:
         time_left = t.sla_deadline - now

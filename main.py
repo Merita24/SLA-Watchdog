@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from datetime import datetime
 
-from models import SessionLocal, Ticket, Base, engine
+from models import SessionLocal, SLATickets, Base, engine
 from watchdog import start_watchdog, scheduler
 
 from contextlib import asynccontextmanager
@@ -46,14 +46,14 @@ app = FastAPI(lifespan=lifespan)
 @app.post("/ticket/")
 async def create_or_update_ticket(ticket: TicketRequest):
     db = SessionLocal()
-    db_ticket = db.query(Ticket).filter(Ticket.ticket_id == ticket.ticket_id).first()
+    db_ticket = db.query(SLATickets).filter(SLATickets.ticket_id == ticket.ticket_id).first()
 
     if db_ticket:
         
-        for key, value in ticket.dict().items():
+        for key, value in ticket.items():
             setattr(db_ticket, key, value)
     else:
-        new_ticket = Ticket(**ticket.dict())
+        new_ticket = SLATickets(**ticket.dict())
         db.add(new_ticket)
 
     db.commit()
@@ -65,7 +65,7 @@ async def create_or_update_ticket(ticket: TicketRequest):
 @app.get("/tickets/")
 async def get_all_tickets():
     db = SessionLocal()
-    data = db.query(Ticket).all()
+    data = db.query(SLATickets).all()
     db.close()
     return data
 
@@ -73,7 +73,7 @@ async def get_all_tickets():
 @app.get("/ticket/{ticket_id}")
 async def get_ticket(ticket_id: int):
     db = SessionLocal()
-    ticket = db.query(Ticket).filter(Ticket.ticket_id == ticket_id).first()
+    ticket = db.query(SLATickets).filter(SLATickets.ticket_id == ticket_id).first()
     db.close()
 
     if not ticket:
