@@ -42,6 +42,10 @@ app = FastAPI(lifespan=lifespan)
 
 
 # ------ENDPOINTS--------
+@app.get("/")
+async def home():
+    return {"message": "SLA Watchdog API is running!"}
+
 
 @app.post("/ticket/")
 async def create_or_update_ticket(ticket: TicketRequest):
